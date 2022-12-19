@@ -49,8 +49,8 @@ OVE6D: [Project page](https://dingdingcai.github.io/ove6d-pose/)
 # Some qualitative results
 
 
-https://user-images.githubusercontent.com/51406001/208401627-bbaafb13-d04a-4c0f-979c-d899aa943b74.mp4
-https://user-images.githubusercontent.com/51406001/208401652-a1acfd67-91e3-486c-98a5-f246c6e0b97e.mp4
+![https://user-images.githubusercontent.com/51406001/208401627-bbaafb13-d04a-4c0f-979c-d899aa943b74.mp4]
+![https://user-images.githubusercontent.com/51406001/208401652-a1acfd67-91e3-486c-98a5-f246c6e0b97e.mp4]
 
 
 
