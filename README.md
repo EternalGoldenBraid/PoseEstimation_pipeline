@@ -12,9 +12,10 @@ Instal the following dependencies (Conda/Mamba or pip):
 - [Pytorch3D](https://github.com/facebookresearch/pytorch3d/blob/main/INSTALL.md)
 - numpy, opencv, trimesh, pyrender, scikit-image
 
-At the time of writing, pip only. (If using realsense camera for RGBD)
-- [Pyrealsense](https://pypi.org/project/pyrealsense/)
+At the time of writing, pip only. 
+- [Pyrealsense](https://pypi.org/project/pyrealsense/) (If using realsense camera for RGBD)
 	- `pip install pyrealsense2==2.50.0.3812`
+- `pip install open3d`
 </details>
 <br>
 

@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import cv2
 import numpy as np
+import open3d as o3d
 
 from lib import rendering
 
@@ -32,7 +33,6 @@ class Dataset():
         
         ### TODO: Combine faces and verts into same container.
         for model_file in sorted(self.model_dir.iterdir()):
-            #breakpoint()
             if str(model_file).endswith('.ply'):
                 obj_id = int(model_file.name.split('_')[-1].split('.')[0])
                 self.obj_model_file[obj_id] = model_file

@@ -70,15 +70,22 @@ def load(cfg, device, **kwargs)-> tuple[NDArray, torch.tensor, None]:
     if True:
         window_name = 'mask'
 
-
         cv2.namedWindow(window_name)
         tola_max = 1000
         tolb_max = 1000
         Cb_key_max = 255
         Cb_key_max = 255
+
         def nothing(value) -> None:
+            """
+            Placeholder for OpenCV Trackbars
+            Trackbars allow to tune the chromakey attributes.
+            """
             pass
 
+        # Create trackbars for color change and tolerance change
+        # Trackbars are used to tune the chromakey attributes.
+        # Only tola is in use at the moment. TODO Clean.
         cv2.createTrackbar('tola', window_name, init_tola, tola_max, nothing)
         cv2.createTrackbar('tolb', window_name, init_tolb, tolb_max, nothing)
         cv2.createTrackbar('Cb_key', window_name, init_Cb_key, Cb_key_max, nothing)
@@ -137,30 +144,7 @@ def load(cfg, device, **kwargs)-> tuple[NDArray, torch.tensor, None]:
             cc_mask[labels == object_label] = 1
             cc_mask[cc_mask != 0] = 1
             
-            ### START DEBUGGING ONLY
 
-            #numLabels_after, labels_after = cv2.connectedComponents(image=cc_mask.astype(np.uint8), ltype=cv2.CV_32S)
-            #print("num labels:", numLabels_after)
-            #print("labels:", np.unique(labels_after))
-            #print()
-            #breakpoint()
-            colors_masked = image.copy()
-            colors_masked[cc_mask.astype(bool)] = [10, 76, 255]
-
-            images = np.hstack((
-                (255*mask[0]).astype(np.uint8)[...,None].repeat(repeats=3, axis=2),
-                (255*cc_mask).astype(np.uint8)[...,None].repeat(repeats=3, axis=2),
-                #cv2.addWeighted(image, 0.7, colors_masked, 0.3, 0)
-                                ))
-
-            cv2.imshow('cc_mask', images)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('p'):
-                breakpoint()
-
-            ### END DEBUGGING ONLY
-
-            #mask_gpu[:] = torch.from_numpy(cc_mask)
             mask[:] = cc_mask.astype(bool)[None,...]
             mask_gpu[:] = torch.from_numpy(mask)
             return mask, mask_gpu, None

@@ -21,10 +21,10 @@ from utility.load_pose_estimator import PoseEstimator
 from dataset import demo_dataset
 from configs import config as cfg
 
-#DEVICE = torch.device('cuda')
-#DEVICE = torch.device('cpu')
-#DEVICE = 'cpu'
-DEVICE = 'cuda'
+DEVICE = torch.device('cuda')
+# DEVICE = torch.device('cpu')
+# DEVICE = 'cpu'
+# DEVICE = 'cuda'
 
 def main(args):
 
@@ -34,7 +34,6 @@ def main(args):
     obj_id: int = io_utils.get_obj_id(
             dataset_path=Path(cfg.DATA_PATH, cfg.DATASET_NAME),
             name=args.object_name)
-    breakpoint()
 
     # Load camera module
    # TODO change to row_major for numpy...? What's torch
@@ -56,9 +55,6 @@ def main(args):
                 n_triangles=args.n_triangles)
 
     # Load pose estimation module
-    obj_id: int = io_utils.get_obj_id(name=args.obj_name)
-    breakpoint()
-    #obj_id: int = args.obj_id.value
     codebook_path: Path = dataroot/'object_codebooks'/ cfg.DATASET_NAME / \
         'zoom_{}'.format(cfg.ZOOM_DIST_FACTOR) / \
         'views_{}'.format(str(cfg.RENDER_NUM_VIEWS))
@@ -77,7 +73,7 @@ def main(args):
         depth_image[depth_image*depth_scale > d_max] = 0
         depth_image[depth_image*depth_scale <= 0] = 0
 
-        masks, masks_gpu, scores = segmentator(color_image)
+        masks, masks_gpu, _ = segmentator(color_image)
 
         cv2.imshow('mask', masks[0].astype(float))
 
@@ -175,17 +171,12 @@ if __name__=="__main__":
                         type=int, required=False, default=2000,
                         help='Number of triangles for cloud/mesh.')
     parser.add_argument('-s', '--segmentation', dest='segment_method',
-                        required=False, default='maskrcnn',
+                        required=False, default='chromakey',
                         choices = ['chromakey','bgs', 'bgs_hsv', 'bgsMOG2', 'bgsKNN', 'contour', 'maskrcnn', 'point_rend'],
                         help="""Method of segmentation.
                         contour: OpenCV based edge detection ...,
                         TODO:
                         """)
-    ### Python < 3.9 TODO: Set this up.
-    #parser.add_argument('--feature', action='store_true', dest='render_mesh')
-    #parser.add_argument('--no-feature', dest='render_mesh', action='store_false')
-    #parser.set_defaults(render_mesh=True)
-    ### Python >= 3.9
     parser.add_argument('-rm', '--render-mesh', dest='render_mesh', action=argparse.BooleanOptionalAction)
     parser.add_argument('-icp', dest='icp', action=argparse.BooleanOptionalAction)
     parser.add_argument('--dataset_name', dest='dataset_name', default='demo_dataset',
