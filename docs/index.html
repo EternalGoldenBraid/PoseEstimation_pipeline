@@ -115,17 +115,17 @@ _(Hodan, PhD thesis, 2021)_
 ## Correspondence based (2D-to-3D or 3D-to-3D)
 
 - **Solve Perspective-n-point (PnP) problem:** Project a set of 3D points `$x^{3D}$` onto an image plane in a way that matches your sensor observation `$x^{2D}$`:
-$
+`$$
 \underset{R||t \in \mathbb{SE}(3)}{\operatorname{argmin}}
 |     | x_i^{2D} - \pi(︁Rx^{3D}_i + t | K)︁ |     | , 
-$
+$$`
 where
-$
+$$`
 \begin{align}
 R \in \mathbb{R}^{3\times3}, \ t \in \mathbb{R}^{3} \\
 \pi:\mathbb{R}^{3} \rightarrow \mathbb{R}^{2}
 \end{align}
-$
+$$`
 </div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
 <div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
 
