@@ -23,7 +23,8 @@ class PoseEstimator:
         self.model_net.load_state_dict(torch.load(model_path, map_location=self.device))
         self.model_net.eval()
         print('OVE6D has been loaded!')
-
+        print("codebook_path: ", codebook_path)
+        print("self.dataset: ", self.dataset)
         # Load object codebooks for all objects
         self.object_codebooks = ove6d.OVE6D_codebook_generation(codebook_dir=codebook_path,
                                                             model_func=self.model_net,

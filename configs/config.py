@@ -11,7 +11,7 @@ RENDER_DIST = 5          # the radius distance factor of uniform sampling relati
 RENDER_NUM_VIEWS = 4000  # the number of uniform sampling views from a sphere
 #RENDER_NUM_VIEWS = 2000  # the number of uniform sampling views from a sphere
 
-#MODEL_SCALING = 1.0/1000 # TLESS object model scale from millimeter to meter
+# MODEL_SCALING = 1.0/1000 # TLESS object model scale from millimeter to meter
 MODEL_SCALING = 1.0      # Polycam objects at meter scale
 
 ZOOM_SIZE = 128          # the target zooming size

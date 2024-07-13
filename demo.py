@@ -5,6 +5,7 @@ from pathlib import Path
 import cv2
 import torch
 import numpy as np
+from OpenGL import EGL
 
 warnings.filterwarnings("ignore")
 
@@ -26,8 +27,61 @@ DEVICE = torch.device('cuda')
 # DEVICE = 'cpu'
 # DEVICE = 'cuda'
 
-def main(args):
+def initialize_egl():
+    display = EGL.eglGetDisplay(EGL.EGL_DEFAULT_DISPLAY)
+    if display == EGL.EGL_NO_DISPLAY:
+        raise Exception("EGL not available")
 
+    initialized = EGL.eglInitialize(display, None, None)
+    if not initialized:
+        raise Exception("Failed to initialize EGL")
+
+    config_attributes = [
+        EGL.EGL_RENDERABLE_TYPE, EGL.EGL_OPENGL_BIT,
+        EGL.EGL_RED_SIZE, 8,
+        EGL.EGL_GREEN_SIZE, 8,
+        EGL.EGL_BLUE_SIZE, 8,
+        EGL.EGL_DEPTH_SIZE, 24,
+        EGL.EGL_NONE
+    ]
+
+    num_configs = EGL.EGLint()
+    config = (EGL.EGLConfig * 1)()
+    if not EGL.eglChooseConfig(display, config_attributes, config, 1, num_configs):
+        raise Exception("Failed to choose EGL config")
+
+    context_attributes = [
+        EGL.EGL_CONTEXT_CLIENT_VERSION, 2,
+        EGL.EGL_NONE
+    ]
+
+    context = EGL.eglCreateContext(display, config[0], EGL.EGL_NO_CONTEXT, context_attributes)
+    if context == EGL.EGL_NO_CONTEXT:
+        raise Exception("Failed to create EGL context")
+
+    pbuffer_attributes = [
+        EGL.EGL_WIDTH, 256,
+        EGL.EGL_HEIGHT, 256,
+        EGL.EGL_NONE,
+    ]
+
+    surface = EGL.eglCreatePbufferSurface(display, config[0], pbuffer_attributes)
+    if surface == EGL.EGL_NO_SURFACE:
+        raise Exception("Failed to create EGL Pbuffer surface")
+
+    if not EGL.eglMakeCurrent(display, surface, surface, context):
+        raise Exception("Failed to make EGL context current")
+
+    return display, surface, context
+
+def main(args):
+    # Initialize EGL
+    try:
+        display, surface, context = initialize_egl()
+        print("EGL initialized successfully")
+    except Exception as e:
+        print(f"EGL initialization failed: {e}")
+        return
     cfg.DATASET_NAME = args.dataset_name
     cfg.USE_ICP = args.icp
 
@@ -58,7 +112,7 @@ def main(args):
     codebook_path: Path = dataroot/'object_codebooks'/ cfg.DATASET_NAME / \
         'zoom_{}'.format(cfg.ZOOM_DIST_FACTOR) / \
         'views_{}'.format(str(cfg.RENDER_NUM_VIEWS))
-
+    print("codebook_path: ", codebook_path)
     pose_estimator = PoseEstimator(cfg=cfg, cam_K=dataset.cam_K, obj_id=obj_id,
             model_path=Path('checkpoints','OVE6D_pose_model.pth'),
             device=DEVICE, dataset=dataset, codebook_path=codebook_path)
@@ -96,7 +150,10 @@ def main(args):
                         obj_depth=torch.tensor(
                             (depth_image*masks[0]*depth_scale).astype(np.float32)).squeeze()[None,...]
                         )
-
+            print("R: ", R)
+            print("R.shape: ", R.shape)
+            print("t: ", t)
+            print("t.shape: ", t.shape)
             ### TODO Multi object support.
             #obj_depths = torch.tensor([(depth_image*mask*depth_scale).astype(np.float32) for mask in masks])
             #R, t = pose_estimator.estimate_poses(obj_masks=masks_gpu, scores=scores,
@@ -136,6 +193,11 @@ def main(args):
 
 
     del cam
+    # Clean up EGL resources
+    EGL.eglDestroyContext(display, context)
+    EGL.eglDestroySurface(display, surface)
+    EGL.eglTerminate(display)
+
 
 if __name__=="__main__":
     import argparse
@@ -165,7 +227,7 @@ if __name__=="__main__":
             description='Superimpose rotated pointcloud onto video.')
 
     parser.add_argument('-o','--object_name', dest='object_name', type=str,
-                        default='box',
+                        default='box', #box
         help='Object name as specified in Dataspace/<dataset_name>/models_info.json')
     parser.add_argument('-n', '--n_triangles', dest='n_triangles',
                         type=int, required=False, default=2000,
@@ -179,7 +241,7 @@ if __name__=="__main__":
                         """)
     parser.add_argument('-rm', '--render-mesh', dest='render_mesh', action=argparse.BooleanOptionalAction)
     parser.add_argument('-icp', dest='icp', action=argparse.BooleanOptionalAction)
-    parser.add_argument('--dataset_name', dest='dataset_name', default='demo_dataset',
+    parser.add_argument('--dataset_name', dest='dataset_name', default='demo_dataset', #demo_dataset
                         help="""Dataset name in path Dataspace/<dataset_name>/...""")
                         
     

@@ -1,3 +1,5 @@
 *.~
 
-# Checkpoints
+checkpoints/
+Dataspace/
+**/__pycache__

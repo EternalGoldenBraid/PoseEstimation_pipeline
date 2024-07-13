@@ -241,11 +241,12 @@ def OVE6D_codebook_generation(model_func, codebook_dir, dataset, config, device)
                             dtype=object)
 
     intrinsic = dataset.cam_K
+    print("dataset.cam_K: ", dataset.cam_K)
     obj_model_files: dict = dataset.obj_model_file
     obj_diameter_info = dataset.obj_diameter
 
     num_objects = len(obj_model_files)
-
+    print("num_objects: ", num_objects)
     if len(codebook_files) == 0:
         if not os.path.exists(codebook_dir):
             os.makedirs(codebook_dir)

@@ -11,9 +11,10 @@ def get_obj_id(name: str, dataset_path: Path) -> int:
         
 
     names = [ (key, models_dict[key]['name']) for key in models_dict ]
-    
+    print("names: ", names)
+    print("name: ", name)
     for key, name_ in names:
         if name == name_:
             return int(key)
-
+    
     raise ValueError(f"Object name id not found in {dataset_path/'models_info.json'}")
